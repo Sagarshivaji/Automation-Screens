@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Live Automation UI Pattern Animation · Sidebar</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+
+  body {
+    background: radial-gradient(circle at 20% 0%, #142b45 0%, #0a1626 55%, #060d16 100%);
+    min-height: 100vh;
+    color: #e6eef8;
+    overflow: hidden;
+  }
+
+  /* ============ LAYOUT ============ */
+  .layout {
+    display: flex;
+    height: 100vh;
+  }
+
+  /* ============ SIDEBAR ============ */
+  .sidebar {
+    width: 260px;
+    background: #081524;
+    border-right: 1px solid #16304d;
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem .85rem 1rem;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #1e3a5c; border-radius: 10px; }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: 0 .4rem .9rem;
+    border-bottom: 1px solid #16304d;
+    margin-bottom: .9rem;
+  }
+  .brand i {
+    color: #38bdf8;
+    font-size: 1.35rem;
+    animation: pulse 2s infinite;
+  }
+  .brand h1 {
+    font-size: .95rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -.01em;
+    line-height: 1.15;
+  }
+  .brand span {
+    display: block;
+    font-size: .6rem;
+    color: #4a6a8a;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-top: 1px;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%     { opacity: .6; transform: scale(1.15); }
+  }
+
+  /* family nav */
+  .nav-label {
+    font-size: .6rem;
+    color: #4a6a8a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 .5rem .5rem;
+    font-weight: 600;
+  }
+
+  .nav-list { display: flex; flex-direction: column; gap: .18rem; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    padding: .55rem .7rem;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #8ba4bd;
+    font-size: .78rem;
+    font-weight: 500;
+    transition: all .16s ease;
+    border: 1px solid transparent;
+    position: relative;
+  }
+  .nav-item .num {
+    font-size: .58rem;
+    background: #142a44;
+    color: #7dd3fc;
+    width: 20px; height: 20px;
+    display: grid; place-items: center;
+    border-radius: 5px;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all .16s;
+  }
+  .nav-item i {
+    font-size: .82rem;
+    width: 1rem;
+    text-align: center;
+    color: #5b7ea3;
+    transition: color .16s;
+  }
+  .nav-item .name { flex: 1; line-height: 1.15; }
+
+  .nav-item:hover {
+    background: #0e2138;
+    color: #d7e8f8;
+  }
+  .nav-item:hover i { color: #7dd3fc; }
+
+  .nav-item.active {
+    background: linear-gradient(90deg, #16304d 0%, #102640 100%);
+    color: #fff;
+    border-color: #2f5679;
+    box-shadow: 0 4px 12px -4px rgba(56,189,248,.35);
+  }
+  .nav-item.active .num {
+    background: #2f7ab5;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(56,189,248,.7);
+  }
+  .nav-item.active i { color: #38bdf8; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: .8rem .5rem 0;
+    border-top: 1px solid #16304d;
+    font-size: .62rem;
+    color: #4a6a8a;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .sidebar-footer .live-dot {
+    width: 6px; height: 6px;
+    background: #34d399;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #34d399;
+    animation: blink 1.2s infinite;
+  }
+  @keyframes blink {
+    0%,100% { opacity:1; }
+    50%     { opacity:.3; }
+  }
+
+  /* ============ MAIN AREA ============ */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .main-head {
+    padding: 1.4rem 2rem 1rem;
+    border-bottom: 1px solid #16304d;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+    background: rgba(8,21,36,.5);
+    backdrop-filter: blur(8px);
+  }
+  .main-head .icon-wrap {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, #16304d, #0e2138);
+    border: 1px solid #2f5679;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    color: #38bdf8;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .main-head h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -.01em;
+  }
+  .main-head .desc {
+    font-size: .72rem;
+    color: #7c93ab;
+    margin-top: .15rem;
+  }
+  .main-head .counter {
+    margin-left: auto;
+    font-size: .65rem;
+    background: #0e2138;
+    border: 1px solid #1e3a5c;
+    color: #7dd3fc;
+    padding: .35rem .75rem;
+    border-radius: 30px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    white-space: nowrap;
+  }
+  .main-head .counter i { font-size: .6rem; }
+
+  /* screens grid */
+  .grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.4rem 2rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    align-content: start;
+  }
+  .grid::-webkit-scrollbar { width: 10px; }
+  .grid::-webkit-scrollbar-track { background: #0a1626; }
+  .grid::-webkit-scrollbar-thumb { background: #1e3a5c; border-radius: 10px; }
+  .grid::-webkit-scrollbar-thumb:hover { background: #2f5679; }
+
+  /* ============ SCREEN CARD ============ */
+  .screen {
+    background: #0f2138;
+    border: 1px solid #1e3a5c;
+    border-radius: 16px;
+    padding: 1rem 1.1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: .65rem;
+    position: relative;
+    overflow: hidden;
+    transition: all .3s;
+    min-height: 170px;
+    opacity: 0;
+    animation: cardIn .4s forwards;
+  }
+
+  @keyframes cardIn {
+    to { opacity: 1; }
+  }
+
+  .screen:hover {
+    border-color: #2f6ea5;
+    box-shadow: 0 12px 28px -12px rgba(56,189,248,.35);
+    transform: translateY(-2px);
+  }
+
+  .screen-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .screen-head h3 {
+    font-size: .82rem;
+    font-weight: 650;
+    color: #cbe3fa;
+    letter-spacing: .01em;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .screen-head h3 i { color: #38bdf8; font-size: .8rem; }
+  .screen-tag {
+    font-size: .6rem;
+    background: #1a3352;
+    color: #7dd3fc;
+    padding: .15rem .5rem;
+    border-radius: 30px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+  }
+
+  .screen-body {
+    font-size: .74rem;
+    color: #9fb6cd;
+    line-height: 1.5;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    justify-content: center;
+  }
+
+  /* ========== STATUS DOTS ========== */
+  .dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-right: .3rem;
+    vertical-align: middle;
+  }
+  .dot-green  { background:#34d399; box-shadow:0 0 8px #34d399; animation: blink 1.4s infinite; }
+  .dot-blue   { background:#38bdf8; box-shadow:0 0 8px #38bdf8; animation: blink 1s infinite; }
+  .dot-amber  { background:#fbbf24; box-shadow:0 0 8px #fbbf24; animation: blink 1.6s infinite; }
+  .dot-red    { background:#f87171; box-shadow:0 0 8px #f87171; animation: blink .9s infinite; }
+  .dot-grey   { background:#64748b; }
+  .dot-purple { background:#c084fc; box-shadow:0 0 8px #c084fc; animation: blink 1.2s infinite; }
+
+  /* ========== PROGRESS BARS ========== */
+  .bar-track {
+    background: #172b44;
+    border-radius: 30px;
+    height: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 30px;
+    background: linear-gradient(90deg, #38bdf8, #34d399);
+    width: 0%;
+    transition: width .5s ease;
+    box-shadow: 0 0 10px rgba(56,189,248,.6);
+  }
+  .bar-fill.slow { background: linear-gradient(90deg, #a78bfa, #38bdf8); }
+  .bar-fill.warn { background: linear-gradient(90deg, #fbbf24, #f87171); }
+
+  .bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: .68rem;
+    color: #7c93ab;
+    margin-top: .25rem;
+  }
+
+  /* ========== CIRCULAR PROGRESS ========== */
+  .circular {
+    width: 60px; height: 60px;
+    position: relative;
+    margin: 0 auto;
+  }
+  .circular svg { transform: rotate(-90deg); }
+  .circular .bg { stroke: #172b44; }
+  .circular .fg {
+    stroke: #38bdf8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset .5s ease;
+    filter: drop-shadow(0 0 4px rgba(56,189,248,.7));
+  }
+  .circular .pct {
+    position: absolute;
+    inset: 0;
+    display: grid; place-items: center;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #cbe3fa;
+  }
+
+  /* ========== STEPPER / TIMELINE ========== */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    font-size: .72rem;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    color: #64748b;
+    transition: color .3s;
+  }
+  .step.active { color: #38bdf8; font-weight: 600; }
+  .step.done   { color: #34d399; }
+  .step i { font-size: .7rem; width: 14px; text-align: center; }
+  .step.done i  { color: #34d399; }
+  .step.active i{ color: #38bdf8; animation: spin 1s linear infinite; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* horizontal pipeline */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: .68rem;
+    flex-wrap: wrap;
+  }
+  .pipe-node {
+    padding: .15rem .45rem;
+    border-radius: 6px;
+    background: #172b44;
+    color: #64748b;
+    border: 1px solid transparent;
+    transition: all .3s;
+  }
+  .pipe-node.done   { background: #133a2e; color: #34d399; border-color: #1f6b52; }
+  .pipe-node.active { background: #0e3350; color: #38bdf8; border-color: #2f6ea5; animation: glow 1.2s infinite; }
+  .pipe-arrow { color: #2f5679; }
+
+  @keyframes glow {
+    0%,100% { box-shadow: 0 0 0 rgba(56,189,248,0); }
+    50%     { box-shadow: 0 0 12px rgba(56,189,248,.5); }
+  }
+
+  /* ========== TRACE / LOG ========== */
+  .trace {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: .66rem;
+    line-height: 1.7;
+    color: #9fb6cd;
+    background: #0a1828;
+    border-radius: 10px;
+    padding: .55rem .7rem;
+    max-height: 120px;
+    overflow: hidden;
+    border-left: 2px solid #2f6ea5;
+  }
+  .trace .line {
+    opacity: 0;
+    transform: translateX(-6px);
+    animation: slideIn .4s forwards;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .trace .line .time { color: #4a6a8a; }
+  .trace .line .info { color: #38bdf8; }
+  .trace .line .warn { color: #fbbf24; }
+  .trace .line .err  { color: #f87171; }
+  .trace .line .ok   { color: #34d399; }
+
+  @keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ========== ACTIVITY FEED ========== */
+  .feed {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+  }
+  .feed-item {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .7rem;
+    color: #9fb6cd;
+    opacity: 0;
+    animation: feedIn .4s forwards;
+  }
+  .feed-item .when {
+    font-size: .62rem;
+    color: #4a6a8a;
+    min-width: 55px;
+  }
+  .feed-item i { color: #38bdf8; font-size: .7rem; }
+
+  @keyframes feedIn {
+    from { opacity:0; transform: translateY(6px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* ========== GRAPH ========== */
+  .graph {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .15rem;
+    font-size: .68rem;
+  }
+  .g-node {
+    padding: .2rem .6rem;
+    border-radius: 8px;
+    background: #172b44;
+    color: #64748b;
+    border: 1px solid #1e3a5c;
+    transition: all .4s;
+    position: relative;
+  }
+  .g-node.done   { background:#133a2e; color:#34d399; border-color:#1f6b52; }
+  .g-node.active { background:#0e3350; color:#38bdf8; border-color:#2f6ea5; animation: glow 1.2s infinite; }
+  .g-node.warn   { background:#3a2c10; color:#fbbf24; border-color:#6b5320; }
+  .g-node.fail   { background:#3a1414; color:#f87171; border-color:#6b2020; animation: shake .5s infinite; }
+  .g-arrow { color: #2f5679; font-size: .7rem; }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%     { transform: translateX(-2px); }
+    75%     { transform: translateX(2px); }
+  }
+
+  /* ========== APPROVAL PANEL ========== */
+  .approval {
+    background: #2a2210;
+    border: 1px solid #6b5320;
+    border-radius: 10px;
+    padding: .65rem .75rem;
+    animation: glowAmber 2s infinite;
+  }
+  .approval .title {
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: .75rem;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    margin-bottom: .35rem;
+  }
+  .approval .btns {
+    display: flex;
+    gap: .35rem;
+    margin-top: .5rem;
+  }
+  .btn {
+    font-size: .65rem;
+    padding: .25rem .55rem;
+    border-radius: 6px;
+    border: 1px solid #2f5679;
+    background: #0e2138;
+    color: #7dd3fc;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all .2s;
+  }
+  .btn:hover { background: #16304d; border-color: #38bdf8; }
+  .btn.primary {
+    background: #0e3350;
+    border-color: #38bdf8;
+    color: #fff;
+    animation: pulseBtn 1.8s infinite;
+  }
+  @keyframes pulseBtn {
+    0%,100% { box-shadow: 0 0 0 rgba(56,189,248,0); }
+    50%     { box-shadow: 0 0 14px rgba(56,189,248,.55); }
+  }
+
+  @keyframes glowAmber {
+    0%,100% { box-shadow: 0 0 0 rgba(251,191,36,0); }
+    50%     { box-shadow: 0 0 16px rgba(251,191,36,.25); }
+  }
+
+  /* ========== ALERT BOXES ========== */
+  .alert {
+    border-radius: 10px;
+    padding: .65rem .75rem;
+    font-size: .72rem;
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    border-left: 3px solid;
+  }
+  .alert .title {
+    font-weight: 700;
+    font-size: .76rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .alert.warn   { background:#2a2210; border-color:#fbbf24; color:#fcd97a; }
+  .alert.danger { background:#2a1414; border-color:#f87171; color:#fca5a5; animation: shake .6s infinite; }
+  .alert.ok     { background:#0f2a20; border-color:#34d399; color:#6ee7b7; }
+  .alert.info   { background:#0f2138; border-color:#38bdf8; color:#7dd3fc; }
+
+  /* ========== RESULT / CHECKMARK ========== */
+  .check-big {
+    font-size: 2.4rem;
+    color: #34d399;
+    text-align: center;
+    animation: popIn .6s ease, pulse 2s infinite;
+  }
+  @keyframes popIn {
+    0%   { transform: scale(0); opacity: 0; }
+    60%  { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ========== MINI STATS GRID ========== */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .4rem;
+  }
+  .stat {
+    background: #0a1828;
+    border-radius: 8px;
+    padding: .4rem .5rem;
+    text-align: center;
+  }
+  .stat .val { font-size: .9rem; font-weight: 700; color: #7dd3fc; }
+  .stat .lbl { font-size: .58rem; color: #4a6a8a; text-transform: uppercase; letter-spacing: .4px; }
+
+  /* ========== COUNTDOWN ========== */
+  .countdown {
+    font-family: 'SF Mono', monospace;
+    font-size: 1.1rem;
+    color: #fbbf24;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: .5px;
+  }
+
+  /* ========== TYPING CURSOR ========== */
+  .cursor::after {
+    content: '▌';
+    color: #38bdf8;
+    animation: blink .8s infinite;
+    margin-left: 1px;
+  }
+
+  /* ========== CAPACITY BARS ========== */
+  .cap-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .68rem;
+    color: #9fb6cd;
+  }
+  .cap-row .name { min-width: 90px; color: #7c93ab; }
+  .cap-row .bar-track { flex: 1; height: 6px; }
+
+  /* mobile */
+  @media (max-width: 760px) {
+    .layout { flex-direction: column; height: auto; }
+    body { overflow: auto; }
+    .sidebar { width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; overflow: visible; }
+    .brand { border-bottom: none; margin-bottom: 0; padding-bottom: 0; width: 100%; }
+    .nav-label { display: none; }
+    .nav-list { flex-direction: row; flex-wrap: wrap; flex: 1; }
+    .sidebar-footer { display: none; }
+    .main { overflow: visible; }
+    .grid { overflow: visible; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <i class="fas fa-robot"></i>
+      <h1>Automation UI<span>Live pattern library</span></h1>
+    </div>
+
+    <div class="nav-label">Families · 10</div>
+    <nav class="nav-list" id="navList"></nav>
+
+    <div class="sidebar-footer">
+      <span class="live-dot"></span>
+      <span>All screens animating live</span>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+    <div class="main-head">
+      <div class="icon-wrap" id="headIcon"><i class="fas fa-sliders"></i></div>
+      <div>
+        <h2 id="headTitle">Setup</h2>
+        <div class="desc" id="headDesc">Screens that happen before automation starts</div>
+      </div>
+      <div class="counter" id="headCounter">
+        <i class="fas fa-layer-group"></i> <span id="counterText">8 screens</span>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+
+<script>
+/* =====================================================================
+   DATA — 10 families, each with animated screens
+   Each screen has a `body` (HTML string). We inject them into the grid
+   when the family is selected. Animations run via a global setInterval
+   registry so they don't leak when switching families.
+   ===================================================================== */
+
+const FAMILIES = [
+  { id:'setup', icon:'fa-sliders', title:'Setup', desc:'Screens that happen before automation starts' },
+  { id:'pre',   icon:'fa-clipboard-check', title:'Pre-Execution', desc:'Plan, review, pre-flight, safety' },
+  { id:'exec',  icon:'fa-play-circle', title:'Execution / Progress', desc:'The running state — bars, steppers, graphs, traces' },
+  { id:'mon',   icon:'fa-chart-line', title:'Monitoring', desc:'Across all automations' },
+  { id:'hitl',  icon:'fa-user-check', title:'Human-in-the-Loop', desc:'Waiting for a human to decide' },
+  { id:'exc',   icon:'fa-triangle-exclamation', title:'Exception', desc:'Non-normal execution states' },
+  { id:'rec',   icon:'fa-rotate-left', title:'Recovery', desc:'Retry · resume · rollback' },
+  { id:'comp',  icon:'fa-circle-check', title:'Completion', desc:'Success and endings' },
+  { id:'hist',  icon:'fa-clock-rotate-left', title:'History / Investigation', desc:'After execution — logs, audit, replay' },
+  { id:'adm',   icon:'fa-shield-halved', title:'Administration / Health', desc:'Governance, cost, SLA' },
+];
+
+/* =====================================================================
+   ANIMATION REGISTRY
+   Every setInterval we create gets stored so switching families can
+   clear them. Prevents runaway loops when jumping between families.
+   ===================================================================== */
+let activeIntervals = [];
+function reg(id) { activeIntervals.push(id); return id; }
+function clearAll() {
+  activeIntervals.forEach(clearInterval);
+  activeIntervals = [];
+}
+
+/* =====================================================================
+   SCREEN BUILDERS — one function per family, returns HTML + a start()
+   function that kicks off the animations for that family.
+   ===================================================================== */
+
+/* ---------- 1. SETUP ---------- */
+function buildSetup() {
+  const html = `
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-list"></i> Automation List</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div><span class="dot dot-green"></span> Job Discovery &nbsp; Active</div>
+        <div><span class="dot dot-green"></span> Lead Generator &nbsp; Active</div>
+        <div><span class="dot dot-amber"></span> Email Campaign &nbsp; Paused</div>
+        <div><span class="dot dot-grey"></span> Resume Optimizer &nbsp; Draft</div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-chart-simple"></i> Dashboard</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div class="stats">
+          <div class="stat"><div class="val" id="dash-active">0</div><div class="lbl">Active</div></div>
+          <div class="stat"><div class="val" id="dash-running">0</div><div class="lbl">Running</div></div>
+          <div class="stat"><div class="val" id="dash-failed">0</div><div class="lbl">Failed</div></div>
+          <div class="stat"><div class="val" id="dash-done">0</div><div class="lbl">Completed</div></div>
+        </div>
+        <div style="text-align:center;font-size:.68rem;color:#7c93ab;margin-top:.3rem;">Success rate <span id="dash-rate" style="color:#34d399;font-weight:700;">0%</span></div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-inbox"></i> Empty State</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div style="text-align:center;">
+          <i class="fas fa-folder-open" style="font-size:1.8rem;color:#2f5679;animation:pulse 2s infinite;"></i>
+          <div style="margin-top:.5rem;color:#cbe3fa;font-weight:600;">No automations yet</div>
+          <div style="color:#7c93ab;font-size:.68rem;margin-top:.2rem;">Create your first workflow</div>
+          <button class="btn primary" style="margin-top:.6rem;">+ Create automation</button>
+        </div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-table-cells"></i> Template Gallery</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div id="tpl-list" style="display:flex;flex-direction:column;gap:.3rem;font-size:.72rem;">
+          <div class="tpl-item" data-i="0">📋 Job Discovery</div>
+          <div class="tpl-item" data-i="1">📋 Lead Generation</div>
+          <div class="tpl-item" data-i="2">📋 Email Outreach</div>
+          <div class="tpl-item" data-i="3">📋 Resume Optimization</div>
+          <div class="tpl-item" data-i="4">📋 Candidate Matching</div>
+        </div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-plus"></i> Create Automation</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div style="font-size:.78rem;color:#cbe3fa;line-height:1.7;">
+          <div>What do you want to automate?</div>
+          <div style="margin-top:.5rem;color:#38bdf8;font-family:monospace;" class="cursor" id="create-type">Job Discovery</div>
+        </div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-diagram-project"></i> Workflow Builder</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div class="graph" id="builder-graph">
+          <div class="g-node" data-n="0">Trigger</div><div class="g-arrow">↓</div>
+          <div class="g-node" data-n="1">Search</div><div class="g-arrow">↓</div>
+          <div class="g-node" data-n="2">Filter</div><div class="g-arrow">↓</div>
+          <div class="g-node" data-n="3">Analyze</div><div class="g-arrow">↓</div>
+          <div class="g-node" data-n="4">Action</div>
+        </div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-sliders"></i> Configuration Form</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div style="font-size:.68rem;color:#9fb6cd;display:flex;flex-direction:column;gap:.5rem;">
+          <div>Max results: <span id="cfg-max" style="color:#38bdf8;font-weight:700;">500</span></div>
+          <div class="bar-track"><div class="bar-fill" id="cfg-bar" style="width:50%;"></div></div>
+          <div>Retry limit: <span style="color:#38bdf8;font-weight:700;">3</span></div>
+          <div>Sources: LinkedIn · Indeed · Naukri</div>
+        </div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-calendar"></i> Schedule Screen</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div style="font-size:.72rem;color:#9fb6cd;line-height:1.9;">
+          <div>○ Manually</div>
+          <div style="color:#38bdf8;font-weight:700;">● Schedule <span style="color:#34d399;">(active)</span></div>
+          <div>○ Event</div>
+          <div>○ Condition</div>
+          <div style="margin-top:.4rem;color:#fbbf24;font-family:monospace;">Every weekday · 09:00 AM</div>
+        </div>
+      </div></div>
+  `;
+
+  function start() {
+    let dash = {active:0,running:0,failed:0,done:0,rate:0};
+    reg(setInterval(() => {
+      dash.active  = Math.min(dash.active+1, 8);
+      dash.running = Math.min(dash.running + (Math.random()>.5?1:0), 3);
+      dash.failed  = Math.min(dash.failed + (Math.random()>.7?1:0), 2);
+      dash.done    = Math.min(dash.done+2, 42);
+      dash.rate    = Math.min(dash.rate+4, 96);
+      const el = id => document.getElementById(id);
+      if (el('dash-active'))  el('dash-active').textContent  = dash.active;
+      if (el('dash-running')) el('dash-running').textContent = dash.running;
+      if (el('dash-failed'))  el('dash-failed').textContent  = dash.failed;
+      if (el('dash-done'))    el('dash-done').textContent    = dash.done;
+      if (el('dash-rate'))    el('dash-rate').textContent    = dash.rate + '%';
+    }, 400));
+
+    let tplIdx = 0;
+    reg(setInterval(() => {
+      document.querySelectorAll('.tpl-item').forEach((el,i) => {
+        el.style.background = i===tplIdx ? '#0e3350' : '';
+        el.style.color      = i===tplIdx ? '#7dd3fc' : '';
+        el.style.borderRadius='6px';
+        el.style.padding='.15rem .4rem';
+        el.style.transition='.3s';
+      });
+      tplIdx = (tplIdx+1)%5;
+    }, 900));
+
+    const phrases = ['Job Discovery','Email Campaign','Custom workflow'];
+    let pIdx=0,cIdx=0,deleting=false;
+    reg(setInterval(() => {
+      const el = document.getElementById('create-type');
+      if (!el) return;
+      const full = phrases[pIdx];
+      if (!deleting) { cIdx++; if (cIdx>full.length) { deleting=true; return; } }
+      else { cIdx--; if (cIdx<0) { deleting=false; pIdx=(pIdx+1)%phrases.length; cIdx=0; return; } }
+      el.textContent = full.slice(0,cIdx);
+    }, 110));
+
+    let bIdx=0;
+    reg(setInterval(() => {
+      document.querySelectorAll('#builder-graph .g-node').forEach((n,i) => {
+        n.classList.remove('active','done');
+        if (i<bIdx) n.classList.add('done');
+        if (i===bIdx) n.classList.add('active');
+      });
+      bIdx = (bIdx+1)%6;
+    }, 700));
+
+    let cfgDir=1,cfgVal=500;
+    reg(setInterval(() => {
+      cfgVal += cfgDir*50;
+      if (cfgVal>=1000){cfgVal=1000;cfgDir=-1;}
+      if (cfgVal<=100){cfgVal=100;cfgDir=1;}
+      const el = document.getElementById('cfg-max');
+      const bar = document.getElementById('cfg-bar');
+      if (el) el.textContent = cfgVal;
+      if (bar) bar.style.width = (cfgVal/1000*100)+'%';
+    }, 500));
+  }
+  return { html, start };
+}
+
+/* ---------- 2. PRE-EXECUTION ---------- */
+function buildPre() {
+  const html = `
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-list-check"></i> Plan Preview</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div class="steps" id="plan-steps">
+          <div class="step"><i class="fas fa-circle"></i> 1. Search job sources</div>
+          <div class="step"><i class="fas fa-circle"></i> 2. Remove duplicates</div>
+          <div class="step"><i class="fas fa-circle"></i> 3. Analyze requirements</div>
+          <div class="step"><i class="fas fa-circle"></i> 4. Match against profile</div>
+          <div class="step"><i class="fas fa-circle"></i> 5. Rank results</div>
+          <div class="step"><i class="fas fa-circle"></i> 6. Save shortlist</div>
+        </div>
+        <div style="text-align:center;font-size:.68rem;color:#7c93ab;">Estimated: 10–15 min</div>
+        <div style="text-align:center;"><button class="btn primary">Start</button></div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-file-lines"></i> Input Review</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div id="input-fields" style="font-size:.7rem;line-height:1.9;">
+          <div class="in-field" style="opacity:0;">Resume &nbsp; <span style="color:#7dd3fc;">Sagar_Product_Designer.pdf</span></div>
+          <div class="in-field" style="opacity:0;">Location &nbsp; <span style="color:#7dd3fc;">Hyderabad</span></div>
+          <div class="in-field" style="opacity:0;">Experience &nbsp; <span style="color:#7dd3fc;">1–3 years</span></div>
+          <div class="in-field" style="opacity:0;">Sources &nbsp; <span style="color:#7dd3fc;">LinkedIn · Indeed · Naukri</span></div>
+        </div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-key"></i> Permission Review</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div style="font-size:.72rem;line-height:1.9;">
+          <div>LinkedIn &nbsp; <span class="dot dot-green"></span> Read jobs</div>
+          <div>Email &nbsp; <span class="dot dot-green"></span> Send email</div>
+          <div>Google Drive &nbsp; <span class="dot dot-amber"></span> Access required</div>
+        </div>
+        <button class="btn" style="margin-top:.4rem;">Review permissions</button>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-plug"></i> Connection Check</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div id="conn-list" style="font-size:.72rem;line-height:2;">
+          <div>LinkedIn &nbsp; <span class="conn-status">✓</span></div>
+          <div>Indeed &nbsp; <span class="conn-status">✓</span></div>
+          <div>Email &nbsp; <span class="conn-status">✓</span></div>
+          <div>CRM &nbsp; <span class="conn-status">⚠</span></div>
+        </div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-plane-departure"></i> Pre-flight Check</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div class="steps" id="flight-steps">
+          <div class="step"><i class="fas fa-circle"></i> Configuration</div>
+          <div class="step"><i class="fas fa-circle"></i> Inputs</div>
+          <div class="step"><i class="fas fa-circle"></i> Connections</div>
+          <div class="step"><i class="fas fa-circle"></i> Permissions</div>
+          <div class="step"><i class="fas fa-circle"></i> Limits</div>
+          <div class="step"><i class="fas fa-circle"></i> Safety rules</div>
+        </div>
+        <div style="text-align:center;color:#34d399;font-weight:700;font-size:.78rem;margin-top:.3rem;" id="flight-status">…</div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-shield-halved"></i> Risk / Safety Review</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div class="stats">
+          <div class="stat"><div class="val" id="risk-scan">0</div><div class="lbl">Jobs scanned</div></div>
+          <div class="stat"><div class="val" id="risk-email">0</div><div class="lbl">Emails possible</div></div>
+          <div class="stat"><div class="val" id="risk-ext">0</div><div class="lbl">External actions</div></div>
+          <div class="stat"><div class="val" style="color:#34d399;">✓</div><div class="lbl">Safety limits</div></div>
+        </div>
+      </div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-circle-check"></i> Confirmation</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body">
+        <div style="font-size:.72rem;line-height:1.8;color:#9fb6cd;">
+          <div>You're about to start:</div>
+          <div style="color:#7dd3fc;font-weight:700;margin:.2rem 0;">Job Discovery</div>
+          <div>Sources: 3 · Max: 500 · Once now</div>
+          <div style="display:flex;gap:.4rem;margin-top:.6rem;">
+            <button class="btn">Cancel</button>
+            <button class="btn primary">Start</button>
+          </div>
+        </div>
+      </div></div>
+  `;
+
+  function start() {
+    let planIdx=0;
+    reg(setInterval(() => {
+      document.querySelectorAll('#plan-steps .step').forEach((s,i) => {
+        s.classList.remove('done','active');
+        if (i<planIdx) s.classList.add('done');
+        if (i===planIdx) s.classList.add('active');
+      });
+      planIdx = (planIdx+1)%7;
+    }, 600));
+
+    let inIdx=0;
+    reg(setInterval(() => {
+      document.querySelectorAll('.in-field').forEach((el,i) => {
+        el.style.opacity = i<=inIdx ? '1' : '0';
+        el.style.transition = '.3s';
+      });
+      inIdx = (inIdx+1)%5;
+    }, 550));
+
+    reg(setInterval(() => {
+      document.querySelectorAll('.conn-status').forEach((el,i) => {
+        if (i===3) {
+          el.textContent = Math.random()>.5 ? '⚠' : '✓';
+          el.style.color = el.textContent==='✓' ? '#34d399' : '#fbbf24';
+        }
+      });
+    }, 900));
+
+    let flightIdx=0;
+    reg(setInterval(() => {
+      document.querySelectorAll('#flight-steps .step').forEach((s,i) => {
+        s.classList.remove('done','active');
+        if (i<flightIdx) s.classList.add('done');
+        if (i===flightIdx) s.classList.add('active');
+      });
+      const status = document.getElementById('flight-status');
+      if (status) status.textContent = flightIdx>=6 ? 'READY' : 'checking…';
+      flightIdx = (flightIdx+1)%8;
+    }, 500));
+
+    let rScan=0,rEmail=0,rExt=0;
+    reg(setInterval(() => {
+      rScan=Math.min(rScan+25,500);
+      rEmail=Math.min(rEmail+3,42);
+      rExt=Math.min(rExt+2,18);
+      const a=document.getElementById('risk-scan');  if(a)a.textContent=rScan;
+      const b=document.getElementById('risk-email'); if(b)b.textContent=rEmail;
+      const c=document.getElementById('risk-ext');   if(c)c.textContent=rExt;
+    }, 250));
+  }
+  return { html, start };
+}
+
+/* ---------- 3. EXECUTION / PROGRESS ---------- */
+function buildExec() {
+  const html = `
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-spinner"></i> Simple Loading</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="text-align:center;">
+        <i class="fas fa-spinner fa-spin" style="font-size:1.8rem;color:#38bdf8;"></i>
+        <div style="margin-top:.5rem;color:#cbe3fa;font-size:.78rem;">Running automation…</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-circle-notch"></i> Spinner + Status</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="text-align:center;">
+        <i class="fas fa-circle-notch fa-spin" style="font-size:1.5rem;color:#34d399;"></i>
+        <div style="margin-top:.4rem;color:#34d399;font-size:.75rem;font-weight:700;">● Running</div>
+        <div style="color:#7c93ab;font-size:.68rem;">Analyzing jobs…</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-bars-progress"></i> Linear Progress</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div>
+        <div style="font-size:.7rem;color:#9fb6cd;margin-bottom:.3rem;">Processing jobs</div>
+        <div class="bar-track"><div class="bar-fill" id="lin-bar" style="width:0%;"></div></div>
+        <div class="bar-label"><span id="lin-done">0 / 100</span><span id="lin-pct">0%</span></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-circle-half-stroke"></i> Circular Progress</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="circular">
+        <svg width="60" height="60">
+          <circle class="bg" cx="30" cy="30" r="26" fill="none" stroke-width="5"/>
+          <circle class="fg" id="circ-fg" cx="30" cy="30" r="26" fill="none" stroke-width="5"
+                  stroke-dasharray="163.4" stroke-dashoffset="163.4"/>
+        </svg>
+        <div class="pct" id="circ-pct">0%</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-shoe-prints"></i> Stepper</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="steps" id="step-stepper">
+        <div class="step"><i class="fas fa-circle"></i> Prepare</div>
+        <div class="step"><i class="fas fa-circle"></i> Validate</div>
+        <div class="step"><i class="fas fa-circle"></i> Discover</div>
+        <div class="step"><i class="fas fa-circle"></i> Analyze</div>
+        <div class="step"><i class="fas fa-circle"></i> Match</div>
+        <div class="step"><i class="fas fa-circle"></i> Complete</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-timeline"></i> Vertical Timeline</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="steps" id="exec-timeline-steps">
+        <div class="step"><i class="fas fa-check"></i> Prepare</div>
+        <div class="step"><i class="fas fa-check"></i> Validate</div>
+        <div class="step"><i class="fas fa-spinner fa-spin"></i> Discover</div>
+        <div class="step"><i class="fas fa-circle"></i> Analyze</div>
+        <div class="step"><i class="fas fa-circle"></i> Match</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-arrow-right-arrow-left"></i> Horizontal Pipeline</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="pipeline" id="exec-pipeline">
+        <span class="pipe-node">Prepare</span><span class="pipe-arrow">→</span>
+        <span class="pipe-node">Validate</span><span class="pipe-arrow">→</span>
+        <span class="pipe-node">Discover</span><span class="pipe-arrow">→</span>
+        <span class="pipe-node">Analyze</span><span class="pipe-arrow">→</span>
+        <span class="pipe-node">Match</span><span class="pipe-arrow">→</span>
+        <span class="pipe-node">Complete</span>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-diagram-project"></i> Execution Graph</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="graph" id="exec-graph-nodes">
+        <div class="g-node">Trigger</div><div class="g-arrow">↓</div>
+        <div class="g-node">Search</div><div class="g-arrow">↓</div>
+        <div class="g-node">Filter</div><div class="g-arrow">↓</div>
+        <div class="g-node">Analyze</div><div class="g-arrow">↓</div>
+        <div class="g-node">Match</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-bolt"></i> Live Execution Graph</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="graph" id="live-graph-nodes">
+        <div class="g-node" data-n="0">Search ✓</div><div class="g-arrow">↓</div>
+        <div class="g-node" data-n="1">Filter ✓</div><div class="g-arrow">↓</div>
+        <div class="g-node" data-n="2">Analyze ● 47%</div><div class="g-arrow">↓</div>
+        <div class="g-node" data-n="3">Match ○</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-crosshairs"></i> Current Stage Focus</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="text-align:center;">
+        <div style="font-size:.6rem;color:#4a6a8a;letter-spacing:1px;">CURRENT STAGE</div>
+        <div style="color:#38bdf8;font-weight:700;font-size:.85rem;margin:.2rem 0;">Analyzing Jobs</div>
+        <div class="bar-track" style="margin:.3rem 0;"><div class="bar-fill slow" id="stage-bar" style="width:0%;"></div></div>
+        <div style="font-size:.68rem;color:#7c93ab;" id="stage-count">0 / 342 jobs</div>
+        <div style="font-size:.65rem;color:#4a6a8a;margin-top:.3rem;">Senior Product Designer — Hyderabad</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-list-ol"></i> Stage + Substeps</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="steps" id="exec-substeps">
+        <div class="step"><i class="fas fa-check"></i> Extract requirements</div>
+        <div class="step"><i class="fas fa-check"></i> Detect skills</div>
+        <div class="step"><i class="fas fa-spinner fa-spin"></i> Compare experience</div>
+        <div class="step"><i class="fas fa-circle"></i> Calculate score</div>
+        <div class="step"><i class="fas fa-circle"></i> Generate summary</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-terminal"></i> Execution Trace</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="trace" id="trace-log"></div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-stream"></i> Activity Feed</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="feed" id="feed-list"></div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-scroll"></i> Log Console</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="trace" id="log-console"></div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-desktop"></i> Execution Monitor</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="display:flex;flex-direction:column;gap:.4rem;">
+        <div style="display:flex;justify-content:space-between;font-size:.72rem;">
+          <span style="color:#cbe3fa;font-weight:700;">Job Discovery</span>
+          <span style="color:#34d399;"><span class="dot dot-green"></span>RUNNING</span>
+        </div>
+        <div class="pipeline" style="font-size:.6rem;">
+          <span class="pipe-node done">Prepare</span><span class="pipe-arrow">→</span>
+          <span class="pipe-node done">Discover</span><span class="pipe-arrow">→</span>
+          <span class="pipe-node active">Analyze</span><span class="pipe-arrow">→</span>
+          <span class="pipe-node">Match</span>
+        </div>
+        <div class="trace" id="monitor-log" style="max-height:60px;"></div>
+        <div style="display:flex;justify-content:space-between;font-size:.62rem;color:#4a6a8a;">
+          <span>Duration: <span id="mon-dur">00:00</span></span>
+          <span>Items: <span id="mon-items">0</span></span>
+        </div>
+      </div></div></div>
+  `;
+
+  function start() {
+    let lin=0;
+    reg(setInterval(() => {
+      lin=(lin+2)%102;
+      const c=Math.min(lin,100);
+      const bar=document.getElementById('lin-bar');
+      const done=document.getElementById('lin-done');
+      const pct=document.getElementById('lin-pct');
+      if(bar)bar.style.width=c+'%';
+      if(done)done.textContent=c+' / 100';
+      if(pct)pct.textContent=c+'%';
+    }, 120));
+
+    let circ=0;
+    reg(setInterval(() => {
+      circ=(circ+3)%103;
+      const c=Math.min(circ,100);
+      const offset=163.4-(163.4*c/100);
+      const fg=document.getElementById('circ-fg');
+      const pct=document.getElementById('circ-pct');
+      if(fg)fg.style.strokeDashoffset=offset;
+      if(pct)pct.textContent=c+'%';
+    }, 150));
+
+    let stepIdx=0;
+    reg(setInterval(() => {
+      document.querySelectorAll('#step-stepper .step').forEach((s,i) => {
+        s.classList.remove('done','active');
+        if(i<stepIdx)s.classList.add('done');
+        if(i===stepIdx)s.classList.add('active');
+      });
+      stepIdx=(stepIdx+1)%7;
+    }, 700));
+
+    let pipeIdx=0;
+    reg(setInterval(() => {
+      document.querySelectorAll('#exec-pipeline .pipe-node').forEach((n,i) => {
+        n.classList.remove('done','active');
+        if(i<pipeIdx)n.classList.add('done');
+        if(i===pipeIdx)n.classList.add('active');
+      });
+      pipeIdx=(pipeIdx+1)%7;
+    }, 600));
+
+    let gIdx=0;
+    reg(setInterval(() => {
+      document.querySelectorAll('#exec-graph-nodes .g-node').forEach((n,i) => {
+        n.classList.remove('done','active');
+        if(i<gIdx)n.classList.add('done');
+        if(i===gIdx)n.classList.add('active');
+      });
+      gIdx=(gIdx+1)%6;
+    }, 650));
+
+    reg(setInterval(() => {
+      const n=document.querySelector('#live-graph-nodes .g-node[data-n="2"]');
+      if(n){const pct=40+Math.floor(Math.random()*40);n.textContent='Analyze ● '+pct+'%';}
+    }, 500));
+
+    let stage=0;
+    reg(setInterval(() => {
+      stage=(stage+4)%105;
+      const c=Math.min(stage,100);
+      const bar=document.getElementById('stage-bar');
+      const cnt=document.getElementById('stage-count');
+      if(bar)bar.style.width=c+'%';
+      if(cnt)cnt.textContent=Math.round(c/100*342)+' / 342 jobs';
+    }, 130));
+
+    let subIdx=0;
+    reg(setInterval(() => {
+      document.querySelectorAll('#exec-substeps .step').forEach((s,i) => {
+        s.classList.remove('done','active');
+        if(i<subIdx)s.classList.add('done');
+        if(i===subIdx)s.classList.add('active');
+      });
+      subIdx=(subIdx+1)%6;
+    }, 600));
+
+    const traceLines=[
+      ['13:24:01','info','Search started'],
+      ['13:24:05','info','LinkedIn returned 42 jobs'],
+      ['13:24:08','info','Duplicate filter started'],
+      ['13:24:11','warn','6 duplicates removed'],
+      ['13:24:14','info','Analysis started'],
+      ['13:24:18','ok','Analyze step complete'],
+      ['13:24:22','info','Matching against profile'],
+    ];
+    let traceIdx=0;
+    reg(setInterval(() => {
+      const el=document.getElementById('trace-log');
+      if(!el)return;
+      const l=traceLines[traceIdx%traceLines.length];
+      const div=document.createElement('div');
+      div.className='line';
+      div.innerHTML=`<span class="time">${l[0]}</span> <span class="${l[1]}">${l[1].toUpperCase()}</span> ${l[2]}`;
+      el.appendChild(div);
+      if(el.children.length>6)el.removeChild(el.firstChild);
+      traceIdx++;
+    }, 700));
+
+    const feedItems=[
+      ['Just now','Analyzed 18 jobs'],
+      ['1 min ago','Removed 6 duplicates'],
+      ['2 min ago','Retrieved 42 jobs'],
+      ['3 min ago','Started discovery'],
+    ];
+    let feedIdx=0;
+    reg(setInterval(() => {
+      const el=document.getElementById('feed-list');
+      if(!el)return;
+      const f=feedItems[feedIdx%feedItems.length];
+      const div=document.createElement('div');
+      div.className='feed-item';
+      div.innerHTML=`<span class="when">${f[0]}</span><i class="fas fa-circle-check"></i><span>${f[1]}</span>`;
+      el.prepend(div);
+      if(el.children.length>4)el.removeChild(el.lastChild);
+      feedIdx++;
+    }, 900));
+
+    const logLines=[
+      ['INFO','discovery.started'],
+      ['INFO','source.linkedin.success'],
+      ['INFO','jobs.received=42'],
+      ['WARN','duplicate.detected=6'],
+      ['INFO','analysis.started'],
+      ['INFO','match.score.avg=0.82'],
+    ];
+    let logIdx=0;
+    reg(setInterval(() => {
+      const el=document.getElementById('log-console');
+      if(!el)return;
+      const l=logLines[logIdx%logLines.length];
+      const div=document.createElement('div');
+      div.className='line';
+      const cls=l[0]==='WARN'?'warn':l[0]==='ERROR'?'err':'info';
+      div.innerHTML=`<span class="${cls}">${l[0]}</span> ${l[1]}`;
+      el.appendChild(div);
+      if(el.children.length>5)el.removeChild(el.firstChild);
+      logIdx++;
+    }, 800));
+
+    let monSec=0;
+    reg(setInterval(() => {
+      monSec++;
+      const m=String(Math.floor(monSec/60)).padStart(2,'0');
+      const s=String(monSec%60).padStart(2,'0');
+      const dur=document.getElementById('mon-dur');
+      const items=document.getElementById('mon-items');
+      if(dur)dur.textContent=`${m}:${s}`;
+      if(items)items.textContent=Math.min(monSec*3,342);
+    }, 1000));
+  }
+  return { html, start };
+}
+
+/* ---------- 4. MONITORING ---------- */
+function buildMon() {
+  const html = `
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-tower-broadcast"></i> Live Automation Center</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;line-height:1.9;">
+        <div style="color:#4a6a8a;font-size:.6rem;letter-spacing:1px;margin-bottom:.3rem;">RUNNING NOW</div>
+        <div>Job Discovery <span style="float:right;color:#38bdf8;" id="mc1">0%</span></div>
+        <div class="bar-track" style="margin:.15rem 0;"><div class="bar-fill" id="mcb1" style="width:0%;"></div></div>
+        <div>Email Campaign <span style="float:right;color:#a78bfa;" id="mc2">0%</span></div>
+        <div class="bar-track" style="margin:.15rem 0;"><div class="bar-fill slow" id="mcb2" style="width:0%;"></div></div>
+        <div>Lead Generator <span style="float:right;color:#34d399;" id="mc3">0%</span></div>
+        <div class="bar-track" style="margin:.15rem 0;"><div class="bar-fill" id="mcb3" style="width:0%;"></div></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-list"></i> Running Jobs List</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;line-height:2;">
+        <div><span class="dot dot-blue"></span> Job Discovery <span style="float:right;color:#38bdf8;" id="rj1">0%</span></div>
+        <div><span class="dot dot-blue"></span> Lead Generation <span style="float:right;color:#a78bfa;" id="rj2">0%</span></div>
+        <div><span class="dot dot-blue"></span> Resume Processing <span style="float:right;color:#34d399;" id="rj3">0%</span></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-gauge"></i> Status Dashboard</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="stats">
+        <div class="stat"><div class="val" style="color:#34d399;" id="ms-healthy">0</div><div class="lbl">Healthy</div></div>
+        <div class="stat"><div class="val" style="color:#38bdf8;" id="ms-running">0</div><div class="lbl">Running</div></div>
+        <div class="stat"><div class="val" style="color:#fbbf24;" id="ms-paused">0</div><div class="lbl">Paused</div></div>
+        <div class="stat"><div class="val" style="color:#f87171;" id="ms-failed">0</div><div class="lbl">Failed</div></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-heart-pulse"></i> Health Dashboard</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.7rem;line-height:1.9;">
+        <div>Success rate <span style="float:right;color:#34d399;font-weight:700;" id="mh1">0%</span></div>
+        <div>Error rate <span style="float:right;color:#f87171;font-weight:700;" id="mh2">0%</span></div>
+        <div>Avg duration <span style="float:right;color:#38bdf8;font-weight:700;" id="mh3">0m</span></div>
+        <div>Failed actions <span style="float:right;color:#fbbf24;font-weight:700;" id="mh4">0</span></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-sitemap"></i> Process Map</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="graph" id="mon-map-nodes">
+        <div class="g-node">Job Discovery</div><div class="g-arrow">↓</div>
+        <div class="g-node">Candidate Matching</div><div class="g-arrow">↓</div>
+        <div class="g-node">Resume Optimization</div><div class="g-arrow">↓</div>
+        <div class="g-node">Application</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-server"></i> Resource / Capacity</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="display:flex;flex-direction:column;gap:.5rem;">
+        <div class="cap-row"><span class="name">API requests</span><div class="bar-track"><div class="bar-fill" id="cap1" style="width:0%;"></div></div><span id="cap1v">0%</span></div>
+        <div class="cap-row"><span class="name">AI processing</span><div class="bar-track"><div class="bar-fill slow" id="cap2" style="width:0%;"></div></div><span id="cap2v">0%</span></div>
+        <div class="cap-row"><span class="name">Workers</span><div class="bar-track"><div class="bar-fill" id="cap3" style="width:0%;"></div></div><span id="cap3v">0%</span></div>
+        <div class="cap-row"><span class="name">Queue</span><div class="bar-track"><div class="bar-fill warn" id="cap4" style="width:0%;"></div></div><span id="cap4v">0%</span></div>
+      </div></div></div>
+  `;
+
+  function start() {
+    let mc1=0,mc2=0,mc3=0;
+    reg(setInterval(() => {
+      mc1=(mc1+2)%101; mc2=(mc2+1.5)%101; mc3=(mc3+2.5)%101;
+      ['mc1','mc2','mc3'].forEach((id,i) => {
+        const v=[mc1,mc2,mc3][i];
+        const el=document.getElementById(id); if(el)el.textContent=Math.round(v)+'%';
+        const b=document.getElementById('mcb'+(i+1)); if(b)b.style.width=v+'%';
+      });
+    }, 150));
+
+    let rj1=0,rj2=0,rj3=0;
+    reg(setInterval(() => {
+      rj1=(rj1+2)%101; rj2=(rj2+1)%101; rj3=(rj3+3)%101;
+      ['rj1','rj2','rj3'].forEach((id,i) => {
+        const v=[rj1,rj2,rj3][i];
+        const el=document.getElementById(id); if(el)el.textContent=Math.round(v)+'%';
+      });
+    }, 200));
+
+    let ms={h:0,r:0,p:0,f:0};
+    reg(setInterval(() => {
+      ms.h=Math.min(ms.h+1,18); ms.r=Math.min(ms.r+1,4);
+      ms.p=Math.min(ms.p+1,2);  ms.f=Math.min(ms.f+1,1);
+      ['ms-healthy','ms-running','ms-paused','ms-failed'].forEach((id,i) => {
+        const v=[ms.h,ms.r,ms.p,ms.f][i];
+        const el=document.getElementById(id); if(el)el.textContent=v;
+      });
+    }, 350));
+
+    let mh={s:0,e:0,d:0,f:0};
+    reg(setInterval(() => {
+      mh.s=Math.min(mh.s+2,98.2); mh.e=Math.min(mh.e+0.4,1.8);
+      mh.d=Math.min(mh.d+0.5,12); mh.f=Math.min(mh.f+0.4,8);
+      const a=document.getElementById('mh1'); if(a)a.textContent=mh.s.toFixed(1)+'%';
+      const b=document.getElementById('mh2'); if(b)b.textContent=mh.e.toFixed(1)+'%';
+      const c=document.getElementById('mh3'); if(c)c.textContent=mh.d.toFixed(1)+'m';
+      const d=document.getElementById('mh4'); if(d)d.textContent=Math.round(mh.f);
+    }, 300));
+
+    let mapIdx=0;
+    reg(setInterval(() => {
+      document.querySelectorAll('#mon-map-nodes .g-node').forEach((n,i) => {
+        n.classList.remove('done','active');
+        if(i<mapIdx)n.classList.add('done');
+        if(i===mapIdx)n.classList.add('active');
+      });
+      mapIdx=(mapIdx+1)%5;
+    }, 800));
+
+    const capTargets=[72,48,61,23];
+    let caps=[0,0,0,0];
+    reg(setInterval(() => {
+      caps=caps.map((c,i) => c<capTargets[i]?c+2:capTargets[i]+(Math.random()*4-2));
+      caps.forEach((c,i) => {
+        const v=Math.max(0,Math.min(100,c));
+        const b=document.getElementById('cap'+(i+1));
+        const t=document.getElementById('cap'+(i+1)+'v');
+        if(b)b.style.width=v+'%';
+        if(t)t.textContent=Math.round(v)+'%';
+      });
+    }, 200));
+  }
+  return { html, start };
+}
+
+/* ---------- 5. HUMAN-IN-THE-LOOP ---------- */
+function buildHitl() {
+  const html = `
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-user-check"></i> Approval Required</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="approval">
+        <div class="title"><i class="fas fa-triangle-exclamation"></i> Approval required</div>
+        <div style="font-size:.7rem;color:#9fb6cd;">The agent wants to send <strong style="color:#fbbf24;">42 emails</strong>.</div>
+        <div class="btns"><button class="btn">Review</button><button class="btn primary">Approve</button><button class="btn">Reject</button></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-keyboard"></i> User Input Required</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;color:#cbe3fa;">
+        <div>Which location should be used?</div>
+        <div style="display:flex;gap:.35rem;margin-top:.5rem;flex-wrap:wrap;">
+          <button class="btn" id="loc-hyd">Hyderabad</button>
+          <button class="btn" id="loc-blr">Bengaluru</button>
+          <button class="btn" id="loc-all">All India</button>
+        </div>
+        <button class="btn primary" style="margin-top:.5rem;">Continue</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-code-branch"></i> Decision Required</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;color:#cbe3fa;">
+        <div>This job matches <strong style="color:#34d399;">91%</strong> of your profile.</div>
+        <div style="margin-top:.5rem;line-height:2;"><div>○ Apply</div><div>○ Save</div><div>○ Ignore</div></div>
+        <button class="btn primary" style="margin-top:.4rem;">Continue</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-eye"></i> Review Before Action</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;color:#cbe3fa;">
+        <div>Ready to send</div>
+        <div style="color:#38bdf8;font-weight:700;margin:.2rem 0;">42 emails prepared</div>
+        <div style="font-size:.65rem;color:#7c93ab;line-height:1.8;">Preview · Recipients · Content · Attachments</div>
+        <div style="display:flex;gap:.35rem;margin-top:.5rem;"><button class="btn">Edit</button><button class="btn primary">Approve</button></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-hourglass-half"></i> Automation Waiting</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="text-align:center;">
+        <i class="fas fa-hourglass-half fa-spin" style="font-size:1.6rem;color:#fbbf24;"></i>
+        <div style="color:#fbbf24;font-weight:700;font-size:.8rem;margin-top:.4rem;">Waiting for approval</div>
+        <div style="color:#7c93ab;font-size:.68rem;margin-top:.3rem;">The automation cannot continue until you approve.</div>
+        <div style="color:#4a6a8a;font-size:.65rem;margin-top:.4rem;">Waiting for: Sagar · Since 13:42</div>
+      </div></div></div>
+  `;
+
+  function start() {
+    let locIdx=0;
+    reg(setInterval(() => {
+      ['loc-hyd','loc-blr','loc-all'].forEach((id,i) => {
+        const el=document.getElementById(id);
+        if(el)el.classList.toggle('primary',i===locIdx);
+      });
+      locIdx=(locIdx+1)%3;
+    }, 1200));
+  }
+  return { html, start };
+}
+
+/* ---------- 6. EXCEPTION ---------- */
+function buildExc() {
+  const html = `
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-triangle-exclamation"></i> Warning</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert warn">
+        <div class="title"><i class="fas fa-triangle-exclamation"></i> Warning</div>
+        <div>Response time is higher than normal. Automation will continue.</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-ban"></i> Action Blocked</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert danger">
+        <div class="title"><i class="fas fa-ban"></i> Action blocked</div>
+        <div>Exceeded the configured safety threshold. No email was sent.</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-gauge-high"></i> Rate Limited</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert warn">
+        <div class="title"><i class="fas fa-gauge-high"></i> Rate limit reached</div>
+        <div>Automation temporarily paused.</div>
+        <div class="countdown" id="rate-countdown">00:14</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-plug-circle-xmark"></i> Connection Lost</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert danger">
+        <div class="title"><i class="fas fa-plug-circle-xmark"></i> Connection lost</div>
+        <div>LinkedIn connection unavailable. Automation paused safely.</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-key"></i> Authentication Expired</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert warn">
+        <div class="title"><i class="fas fa-key"></i> Authentication expired</div>
+        <div>Reconnect your account to continue.</div>
+        <button class="btn" style="margin-top:.3rem;">Reconnect</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-clock"></i> Timeout</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert danger">
+        <div class="title"><i class="fas fa-clock"></i> Step timed out</div>
+        <div>Analyze Jobs exceeded the maximum execution time.</div>
+        <button class="btn" style="margin-top:.3rem;">Retry</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-circle-exclamation"></i> Data Validation</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert warn">
+        <div class="title"><i class="fas fa-circle-exclamation"></i> Cannot continue</div>
+        <div>Required candidate information is missing:</div>
+        <div style="color:#fcd97a;">• Experience<br>• Skills</div>
+        <button class="btn" style="margin-top:.3rem;">Fix input</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-link-slash"></i> Dependency Failure</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert danger">
+        <div class="title"><i class="fas fa-link-slash"></i> Cannot continue</div>
+        <div>Resume Parser is unavailable. Automation paused.</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-circle-half-stroke"></i> Partial Failure</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert warn">
+        <div class="title"><i class="fas fa-circle-half-stroke"></i> Completed with issues</div>
+        <div>342 processed · <span style="color:#34d399;">327 successful</span> · <span style="color:#f87171;">15 failed</span></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-circle-xmark"></i> Critical Failure</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert danger">
+        <div class="title"><i class="fas fa-circle-xmark"></i> Automation stopped</div>
+        <div>A critical error occurred. No further actions executed.</div>
+        <div style="display:flex;gap:.35rem;margin-top:.4rem;"><button class="btn">View details</button><button class="btn primary">Retry</button></div>
+      </div></div></div>
+  `;
+
+  function start() {
+    let rate=14;
+    reg(setInterval(() => {
+      rate=rate>0?rate-1:14;
+      const el=document.getElementById('rate-countdown');
+      if(el)el.textContent='00:'+String(rate).padStart(2,'0');
+    }, 1000));
+  }
+  return { html, start };
+}
+
+/* ---------- 7. RECOVERY ---------- */
+function buildRec() {
+  const html = `
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-rotate"></i> Retry Entire Automation</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="text-align:center;">
+        <i class="fas fa-rotate fa-spin" style="font-size:1.6rem;color:#38bdf8;"></i>
+        <div style="font-size:.75rem;color:#cbe3fa;margin-top:.4rem;">Retry automation?</div>
+        <div style="font-size:.65rem;color:#7c93ab;">This will start the workflow again.</div>
+        <button class="btn primary" style="margin-top:.5rem;">Retry</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-list-check"></i> Retry Failed Steps</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;color:#cbe3fa;">
+        <div><strong style="color:#f87171;">15 steps failed</strong></div>
+        <div style="color:#7c93ab;font-size:.68rem;margin-top:.2rem;">Retry only failed steps?</div>
+        <button class="btn primary" style="margin-top:.5rem;">Retry failed</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-square-check"></i> Retry Failed Items</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.7rem;color:#cbe3fa;line-height:1.9;">
+        <div>15 jobs failed</div>
+        <div><input type="checkbox" checked> Job 1</div>
+        <div><input type="checkbox" checked> Job 2</div>
+        <div><input type="checkbox"> Job 3</div>
+        <button class="btn primary" style="margin-top:.4rem;">Retry selected</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-play"></i> Resume</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;color:#cbe3fa;">
+        <div>Automation paused</div>
+        <div style="color:#7c93ab;font-size:.68rem;margin-top:.2rem;">Last successful step: <strong style="color:#38bdf8;">Analyze Jobs</strong></div>
+        <button class="btn primary" style="margin-top:.5rem;">Resume</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-bookmark"></i> Resume From Checkpoint</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.7rem;color:#cbe3fa;">
+        <div style="color:#38bdf8;font-weight:700;">Checkpoint · saved 13:28</div>
+        <div style="color:#34d399;margin-top:.3rem;">Completed: Discovery, Filtering</div>
+        <div style="color:#fbbf24;">Remaining: Analysis, Matching</div>
+        <button class="btn primary" style="margin-top:.5rem;">Continue</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-forward"></i> Skip Step</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;color:#cbe3fa;">
+        <div style="color:#fbbf24;">Analyze Jobs failed.</div>
+        <div style="color:#7c93ab;font-size:.68rem;margin-top:.2rem;">You can skip this step and continue with available data.</div>
+        <button class="btn primary" style="margin-top:.5rem;">Skip</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-rotate-left"></i> Rollback</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert warn">
+        <div class="title"><i class="fas fa-rotate-left"></i> Rollback available</div>
+        <div>23 records were modified.</div>
+        <div style="display:flex;gap:.35rem;margin-top:.4rem;"><button class="btn">Review changes</button><button class="btn primary">Roll back</button></div>
+      </div></div></div>
+  `;
+  function start() { /* static */ }
+  return { html, start };
+}
+
+/* ---------- 8. COMPLETION ---------- */
+function buildComp() {
+  const html = `
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-circle-check"></i> Success</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="text-align:center;">
+        <div class="check-big"><i class="fas fa-circle-check"></i></div>
+        <div style="color:#34d399;font-weight:700;font-size:.8rem;">Automation completed</div>
+        <div style="color:#7c93ab;font-size:.68rem;margin-top:.2rem;">342 processed · 327 successful · 24m 18s</div>
+        <button class="btn primary" style="margin-top:.5rem;">View results</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-triangle-exclamation"></i> Completed With Warnings</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert warn">
+        <div class="title"><i class="fas fa-triangle-exclamation"></i> Completed with warnings</div>
+        <div>327 successful · 12 warnings · 3 skipped</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-circle-half-stroke"></i> Partial Success</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert warn">
+        <div class="title"><i class="fas fa-circle-half-stroke"></i> Partially completed</div>
+        <div>82 / 100 items processed · 18 require attention.</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-magnifying-glass"></i> No Results</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="text-align:center;">
+        <i class="fas fa-magnifying-glass" style="font-size:1.5rem;color:#4a6a8a;"></i>
+        <div style="color:#34d399;font-weight:700;font-size:.78rem;margin-top:.4rem;">Completed successfully</div>
+        <div style="color:#7c93ab;font-size:.68rem;">No matching jobs found.</div>
+        <button class="btn" style="margin-top:.5rem;">Adjust criteria</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-circle-stop"></i> Cancelled</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert info">
+        <div class="title"><i class="fas fa-circle-stop"></i> Automation cancelled</div>
+        <div>82 items processed before cancellation.</div>
+        <button class="btn" style="margin-top:.3rem;">View results</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-clock"></i> Scheduled / Waiting</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="text-align:center;">
+        <i class="fas fa-clock" style="font-size:1.5rem;color:#38bdf8;animation:pulse 2s infinite;"></i>
+        <div style="color:#cbe3fa;font-weight:700;font-size:.8rem;margin-top:.4rem;">Automation saved</div>
+        <div style="color:#fbbf24;font-size:.72rem;margin-top:.2rem;">Next run: Tomorrow · 09:00 AM</div>
+        <button class="btn" style="margin-top:.5rem;">View automation</button>
+      </div></div></div>
+  `;
+  function start() { /* static */ }
+  return { html, start };
+}
+
+/* ---------- 9. HISTORY ---------- */
+function buildHist() {
+  const html = `
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-clock-rotate-left"></i> Execution History</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;line-height:2;">
+        <div>Oct 7 09:00 &nbsp; <span style="color:#34d399;">✓ Success</span></div>
+        <div>Oct 6 09:00 &nbsp; <span style="color:#fbbf24;">⚠ Partial</span></div>
+        <div>Oct 5 09:00 &nbsp; <span style="color:#34d399;">✓ Success</span></div>
+        <div>Oct 4 09:00 &nbsp; <span style="color:#f87171;">✕ Failed</span></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-file-lines"></i> Execution Detail</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.7rem;line-height:1.8;">
+        <div style="color:#38bdf8;font-weight:700;">Execution #10282</div>
+        <div>Status <span style="float:right;color:#34d399;">Success</span></div>
+        <div>Duration <span style="float:right;color:#7dd3fc;">24m</span></div>
+        <div>Started <span style="float:right;color:#7dd3fc;">09:00</span></div>
+        <div>Finished <span style="float:right;color:#7dd3fc;">09:24</span></div>
+        <div style="color:#7c93ab;margin-top:.3rem;">342 processed · 327 successful · 15 skipped</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-play"></i> Execution Replay</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="pipeline" id="hist-replay" style="flex-direction:column;align-items:flex-start;gap:.15rem;font-size:.68rem;">
+        <span class="pipe-node">09:00 Trigger</span>
+        <span class="pipe-arrow">↓</span>
+        <span class="pipe-node">09:01 Search</span>
+        <span class="pipe-arrow">↓</span>
+        <span class="pipe-node">09:05 Filter</span>
+        <span class="pipe-arrow">↓</span>
+        <span class="pipe-node">09:10 Analyze</span>
+        <span class="pipe-arrow">↓</span>
+        <span class="pipe-node">09:18 Match</span>
+        <span class="pipe-arrow">↓</span>
+        <span class="pipe-node">09:24 Complete</span>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-scroll"></i> Logs</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="trace" id="hist-log"></div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-user-pen"></i> Audit Trail</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.7rem;line-height:1.8;">
+        <div style="color:#cbe3fa;font-weight:700;">Sagar</div>
+        <div>Changed email limit <span style="color:#f87171;">20</span> → <span style="color:#34d399;">50</span></div>
+        <div style="color:#4a6a8a;">10:42 AM</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-bug"></i> Error Investigation</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="alert danger">
+        <div class="title"><i class="fas fa-bug"></i> Error</div>
+        <div>Step: Send Email</div>
+        <div>Error: Provider rejected request</div>
+        <div>First occurred: 13:42 · Occurrences: <span style="color:#f87171;font-weight:700;" id="err-count">0</span></div>
+        <button class="btn" style="margin-top:.3rem;">View affected items</button>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-file-export"></i> Output / Results</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="text-align:center;">
+        <i class="fas fa-file-export" style="font-size:1.5rem;color:#38bdf8;"></i>
+        <div style="color:#cbe3fa;font-weight:700;font-size:.8rem;margin-top:.3rem;">127 matched jobs</div>
+        <div style="display:flex;gap:.35rem;justify-content:center;margin-top:.5rem;"><button class="btn">View all</button><button class="btn primary">Export</button></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-code-compare"></i> Run Comparison</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.68rem;">
+        <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:.3rem;color:#4a6a8a;font-size:.6rem;margin-bottom:.3rem;">
+          <span></span><span>Today</span><span>Yesterday</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:.3rem;line-height:1.9;">
+          <span>Jobs</span><span style="color:#38bdf8;" id="cmp1">0</span><span style="color:#7c93ab;" id="cmp1b">0</span>
+          <span>Matches</span><span style="color:#38bdf8;" id="cmp2">0</span><span style="color:#7c93ab;" id="cmp2b">0</span>
+          <span>Errors</span><span style="color:#f87171;" id="cmp3">0</span><span style="color:#7c93ab;" id="cmp3b">0</span>
+          <span>Duration</span><span style="color:#38bdf8;" id="cmp4">0m</span><span style="color:#7c93ab;" id="cmp4b">0m</span>
+        </div>
+      </div></div></div>
+  `;
+
+  function start() {
+    let replayIdx=0;
+    reg(setInterval(() => {
+      const nodes=document.querySelectorAll('#hist-replay .pipe-node');
+      if(nodes.length){
+        nodes.forEach((n,i) => {
+          n.classList.remove('done','active');
+          if(i<replayIdx)n.classList.add('done');
+          if(i===replayIdx)n.classList.add('active');
+        });
+        replayIdx=(replayIdx+1)%(nodes.length+1);
+      }
+    }, 600));
+
+    const histLines=[
+      ['INFO','step.start  analyze'],
+      ['INFO','step.done   analyze'],
+      ['WARN','retry       match'],
+      ['INFO','step.start  match'],
+      ['OK','step.done   match'],
+    ];
+    let hlIdx=0;
+    reg(setInterval(() => {
+      const el=document.getElementById('hist-log');
+      if(!el)return;
+      const l=histLines[hlIdx%histLines.length];
+      const div=document.createElement('div');
+      div.className='line';
+      const cls=l[0]==='WARN'?'warn':l[0]==='OK'?'ok':'info';
+      div.innerHTML=`<span class="${cls}">${l[0]}</span> ${l[1]}`;
+      el.appendChild(div);
+      if(el.children.length>4)el.removeChild(el.firstChild);
+      hlIdx++;
+    }, 800));
+
+    let errN=0;
+    reg(setInterval(() => {
+      errN=(errN+1)%13;
+      const el=document.getElementById('err-count');
+      if(el)el.textContent=errN;
+    }, 500));
+
+    let cmp={a:0,b:0,c:0,d:0};
+    reg(setInterval(() => {
+      cmp.a=Math.min(cmp.a+20,342);
+      cmp.b=Math.min(cmp.b+10,127);
+      cmp.c=Math.min(cmp.c+1,3);
+      cmp.d=Math.min(cmp.d+2,24);
+      const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+      set('cmp1',cmp.a); set('cmp1b',Math.round(cmp.a*0.87));
+      set('cmp2',cmp.b); set('cmp2b',Math.round(cmp.b*0.82));
+      set('cmp3',cmp.c); set('cmp3b',1);
+      set('cmp4',cmp.d+'m'); set('cmp4b','19m');
+    }, 200));
+  }
+  return { html, start };
+}
+
+/* ---------- 10. ADMIN ---------- */
+function buildAdm() {
+  const html = `
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-gear"></i> Automation Settings</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;line-height:1.9;">
+        <div>Name <span style="float:right;color:#7dd3fc;">Job Discovery</span></div>
+        <div>Owner <span style="float:right;color:#7dd3fc;">Sagar</span></div>
+        <div>Schedule <span style="float:right;color:#7dd3fc;">Weekdays 09:00</span></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-shield-halved"></i> Safety Controls</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;line-height:2;">
+        <div>Max emails/hour <span style="float:right;color:#fbbf24;font-weight:700;" id="saf1">0</span></div>
+        <div>Max applications/day <span style="float:right;color:#fbbf24;font-weight:700;" id="saf2">0</span></div>
+        <div>Failure threshold <span style="float:right;color:#f87171;font-weight:700;" id="saf3">0</span></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-lock"></i> Guardrails</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;line-height:2;">
+        <div>Duplicate protection <span style="float:right;color:#34d399;">ON</span></div>
+        <div>Rate protection <span style="float:right;color:#34d399;">ON</span></div>
+        <div>Anomaly detection <span style="float:right;color:#34d399;" id="guard-anom">ON</span></div>
+        <div>Auto-pause <span style="float:right;color:#34d399;">ON</span></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-bell"></i> Notification Settings</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.7rem;line-height:2;">
+        <div><input type="checkbox" checked> Automation completes</div>
+        <div><input type="checkbox" checked> Automation fails</div>
+        <div><input type="checkbox" checked> Automation pauses</div>
+        <div><input type="checkbox" checked> Approval required</div>
+        <div><input type="checkbox" id="notif-safety"> Safety rule triggered</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-users"></i> Access / Permissions</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;line-height:2;">
+        <div>Sagar <span style="float:right;color:#38bdf8;">Owner</span></div>
+        <div>Rahul <span style="float:right;color:#a78bfa;">Editor</span></div>
+        <div>Priya <span style="float:right;color:#7c93ab;">Viewer</span></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-code-branch"></i> Version History</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.72rem;line-height:2;">
+        <div>v4 <span style="float:right;color:#34d399;">Current</span></div>
+        <div>v3 <span style="float:right;color:#4a6a8a;">Oct 5</span></div>
+        <div>v2 <span style="float:right;color:#4a6a8a;">Oct 2</span></div>
+        <div>v1 <span style="float:right;color:#4a6a8a;">Sep 28</span></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-clock-rotate-left"></i> Change History</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.68rem;line-height:1.9;">
+        <div style="color:#38bdf8;">Oct 7 · Sagar</div>
+        <div style="color:#7c93ab;">raised max results 200→500</div>
+        <div style="color:#a78bfa;margin-top:.3rem;">Oct 5 · Rahul</div>
+        <div style="color:#7c93ab;">added source: Naukri</div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-coins"></i> Usage / Cost</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div class="stats">
+        <div class="stat"><div class="val" id="us1">0</div><div class="lbl">Runs</div></div>
+        <div class="stat"><div class="val" id="us2">0</div><div class="lbl">AI exec</div></div>
+        <div class="stat"><div class="val" id="us3">0</div><div class="lbl">API calls</div></div>
+        <div class="stat"><div class="val" id="us4">$0</div><div class="lbl">Est. cost</div></div>
+      </div></div></div>
+
+    <div class="screen"><div class="screen-head"><h3><i class="fas fa-chart-line"></i> SLA / Performance</h3><span class="screen-tag">live</span></div>
+      <div class="screen-body"><div style="font-size:.7rem;line-height:1.9;">
+        <div>Availability <span style="float:right;color:#34d399;" id="sla1">0%</span></div>
+        <div>Success rate <span style="float:right;color:#34d399;" id="sla2">0%</span></div>
+        <div>Avg duration <span style="float:right;color:#38bdf8;" id="sla3">0m</span></div>
+        <div>P95 duration <span style="float:right;color:#fbbf24;" id="sla4">0m</span></div>
+      </div></div></div>
+  `;
+
+  function start() {
+    let saf={a:0,b:0,c:0};
+    reg(setInterval(() => {
+      saf.a=Math.min(saf.a+2,20);
+      saf.b=Math.min(saf.b+4,50);
+      saf.c=Math.min(saf.c+1,5);
+      const s1=document.getElementById('saf1'); if(s1)s1.textContent=saf.a;
+      const s2=document.getElementById('saf2'); if(s2)s2.textContent=saf.b;
+      const s3=document.getElementById('saf3'); if(s3)s3.textContent=saf.c;
+    }, 250));
+
+    let anomOn=true;
+    reg(setInterval(() => {
+      anomOn=!anomOn;
+      const el=document.getElementById('guard-anom');
+      if(el){el.textContent=anomOn?'ON':'OFF';el.style.color=anomOn?'#34d399':'#f87171';}
+    }, 2000));
+
+    let notifOn=false;
+    reg(setInterval(() => {
+      notifOn=!notifOn;
+      const el=document.getElementById('notif-safety');
+      if(el)el.checked=notifOn;
+    }, 1800));
+
+    let us={a:0,b:0,c:0,d:0};
+    reg(setInterval(() => {
+      us.a=Math.min(us.a+60,1284);
+      us.b=Math.min(us.b+200,4238);
+      us.c=Math.min(us.c+900,18392);
+      us.d=Math.min(us.d+1.2,24.82);
+      const s1=document.getElementById('us1'); if(s1)s1.textContent=us.a.toLocaleString();
+      const s2=document.getElementById('us2'); if(s2)s2.textContent=us.b.toLocaleString();
+      const s3=document.getElementById('us3'); if(s3)s3.textContent=us.c.toLocaleString();
+      const s4=document.getElementById('us4'); if(s4)s4.textContent='$'+us.d.toFixed(2);
+    }, 120));
+
+    let sla={a:0,b:0,c:0,d:0};
+    reg(setInterval(() => {
+      sla.a=Math.min(sla.a+4,99.8);
+      sla.b=Math.min(sla.b+3,98.2);
+      sla.c=Math.min(sla.c+0.5,12);
+      sla.d=Math.min(sla.d+1,24);
+      const s1=document.getElementById('sla1'); if(s1)s1.textContent=sla.a.toFixed(1)+'%';
+      const s2=document.getElementById('sla2'); if(s2)s2.textContent=sla.b.toFixed(1)+'%';
+      const s3=document.getElementById('sla3'); if(s3)s3.textContent=sla.c.toFixed(1)+'m';
+      const s4=document.getElementById('sla4'); if(s4)s4.textContent=sla.d.toFixed(0)+'m';
+    }, 150));
+  }
+  return { html, start };
+}
+
+/* =====================================================================
+   MAP family id → builder
+   ===================================================================== */
+const BUILDERS = {
+  setup: buildSetup,
+  pre:   buildPre,
+  exec:  buildExec,
+  mon:   buildMon,
+  hitl:  buildHitl,
+  exc:   buildExc,
+  rec:   buildRec,
+  comp:  buildComp,
+  hist:  buildHist,
+  adm:   buildAdm,
+};
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+const navList = document.getElementById('navList');
+const grid = document.getElementById('grid');
+const headIcon = document.getElementById('headIcon');
+const headTitle = document.getElementById('headTitle');
+const headDesc  = document.getElementById('headDesc');
+const counterText = document.getElementById('counterText');
+
+let activeId = 'setup';
+
+function buildNav() {
+  navList.innerHTML = '';
+  FAMILIES.forEach((fam, i) => {
+    const el = document.createElement('div');
+    el.className = 'nav-item' + (fam.id === activeId ? ' active' : '');
+    el.dataset.id = fam.id;
+    el.innerHTML = `
+      <span class="num">${i + 1}</span>
+      <i class="fas ${fam.icon}"></i>
+      <span class="name">${fam.title}</span>
+    `;
+    el.addEventListener('click', () => selectFamily(fam.id));
+    navList.appendChild(el);
+  });
+}
+
+function selectFamily(id) {
+  if (id === activeId && grid.children.length > 0) return;
+
+  // stop previous animations
+  clearAll();
+
+  activeId = id;
+
+  // update nav active state
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.id === id);
+  });
+
+  const fam = FAMILIES.find(f => f.id === id);
+  if (!fam) return;
+
+  // update header
+  headIcon.innerHTML = `<i class="fas ${fam.icon}"></i>`;
+  headTitle.textContent = fam.title;
+  headDesc.textContent  = fam.desc;
+
+  // build screens
+  const builder = BUILDERS[id];
+  if (!builder) return;
+
+  const { html, start } = builder();
+  grid.innerHTML = html;
+
+  // count rendered screens
+  const count = grid.children.length;
+  counterText.textContent = `${count} screens`;
+
+  // start animations
+  start();
+
+  // scroll to top
+  grid.scrollTop = 0;
+}
+
+/* =====================================================================
+   INIT
+   ===================================================================== */
+buildNav();
+selectFamily('setup');
+</script>
+
+</body>
+</html>
